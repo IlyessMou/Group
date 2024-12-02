@@ -1,0 +1,40 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+    <%@ taglib prefix = "c" uri = "http://java.sun.com/jsp/jstl/core" %>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Quiz</title>
+</head>
+<body>
+    <h1>Create a New Quiz</h1>
+
+    <!-- Quiz creation form -->
+    <form action="/quiz/create" method="post">
+        <label for="title">Quiz Title:</label>
+        <input type="text" name="title" id="title" required><br>
+
+        <label for="description">Description:</label>
+        <textarea name="description" id="description" required></textarea><br>
+
+        <label for="numQuestions">Number of Questions:</label>
+        <input type="number" name="numQuestions" id="numQuestions" required><br>
+
+        <label for="private">Private Quiz:</label>
+        <input type="checkbox" name="private" id="private"><br>
+
+        <input type="submit" value="Create Quiz">
+    </form>
+
+    <c:if test="${not empty quiz}">
+        <!-- Redirect to add-questions page -->
+        <p>Quiz created successfully! Now add questions to the quiz.</p>
+        <a href="/quiz/${quiz.id}/add-questions">Go to Add Questions</a>
+    </c:if>
+
+</body>
+</html>
+
+    

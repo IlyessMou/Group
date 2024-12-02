@@ -1,0 +1,35 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+    
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	<h2>Add Questions for Quiz: ${quiz.name}</h2>
+<form action="/quiz/${quiz.id}/add-questions" method="POST">
+    <c:forEach begin="1" end="${quiz.numQuestions}" var="i">
+        <div>
+            <h4>Question ${i}</h4>
+            <label>Content:</label>
+            <input type="text" name="questions[${i - 1}].content" required />
+            <label>Option A:</label>
+            <input type="text" name="questions[${i - 1}].optionA" required />
+            <label>Option B:</label>
+            <input type="text" name="questions[${i - 1}].optionB" required />
+            <label>Option C:</label>
+            <input type="text" name="questions[${i - 1}].optionC" />
+            <label>Option D:</label>
+            <input type="text" name="questions[${i - 1}].optionD" />
+            <label>Correct Answer:</label>
+            <input type="text" name="questions[${i - 1}].correctAnswer" required />
+        </div>
+        <hr />
+    </c:forEach>
+    <button type="submit">Submit</button>
+</form>
+</body>
+</html>

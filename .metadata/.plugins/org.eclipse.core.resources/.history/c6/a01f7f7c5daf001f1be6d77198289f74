@@ -1,0 +1,19 @@
+package com.example.quizza.models;
+
+@Entity
+public class Quiz {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String name;
+    private String difficulty;
+    private boolean isPrivate;
+    private String code;
+    private int numQuestions;
+
+    @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL)
+    private List<Question> questions;
+
+    // Getters and setters
+}

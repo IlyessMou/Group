@@ -1,0 +1,15 @@
+package com.example.quizzapp.repositories;
+
+import java.util.List;
+
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
+
+import com.example.quizzapp.models.Quiz;
+
+@Repository
+public interface QuizRepository extends CrudRepository<Quiz, Long> {
+    Quiz findByCode(String code);
+
+    List<Quiz> findByIsPrivateFalse();  // This will still work
+}

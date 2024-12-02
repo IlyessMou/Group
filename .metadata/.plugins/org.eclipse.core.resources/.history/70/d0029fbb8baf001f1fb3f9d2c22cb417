@@ -1,0 +1,11 @@
+package com.example.quizzapp.services;
+
+@Service
+public class QuestionService {
+    @Autowired
+    private QuestionRepository questionRepo;
+
+    public Question save(Question question) {
+        return questionRepo.save(question);
+    }
+}

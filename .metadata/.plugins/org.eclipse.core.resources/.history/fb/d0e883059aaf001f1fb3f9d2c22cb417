@@ -1,0 +1,66 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ taglib prefix = "c" uri = "http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .card {
+            margin: 10px;
+        }
+        .container {
+            margin-top: 50px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome, ${user.firstName}!</h1>
+        <div>
+            <h3>Your Quizzes</h3>
+            <div class="row">
+                <!-- Display public quizzes -->
+                <c:forEach var="quiz" items="${quizzes}">
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">${quiz.title}</h5>
+                                <p class="card-text">${quiz.description}</p>
+                                <a href="/quiz/${quiz.id}" class="btn btn-primary">Take Quiz</a>
+                            </div>
+                        </div>
+                    </div>
+                </c:forEach>
+            </div>
+            <a href="/quiz/create" class="btn btn-primary mt-3">Create a New Quiz</a>
+        </div>
+
+        <!-- Private Quiz Access -->
+        <div class="mt-4">
+            <h3>Enter Code for Private Quiz</h3>
+            <form:form action="/quiz/${quizCode}/access" method="get">
+                <div class="form-group">
+                    <label for="quizCode">Quiz Code</label>
+                    <form:input type="text" class="form-control" id="quizCode" name="code" path="code" placeholder="Enter the quiz code" required />
+                </div>
+                <button type="submit" class="btn btn-secondary">Access Quiz</button>
+            </form:form>
+        </div>
+
+        <!-- Logout Button -->
+        <a href="/logout" class="btn btn-danger mt-4">Logout</a>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
+
+    

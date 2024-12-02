@@ -1,0 +1,108 @@
+package com.example.quizza.controllers;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import com.example.quizza.models.Quiz;
+import com.example.quizza.models.Question;
+
+import com.example.quizza.repositories.QuestionRepository;
+import com.example.quizza.repositories.QuizRepository;
+
+@Controller
+public class MainController {
+
+    @Autowired
+    private QuizRepository quizRepository;
+
+    @Autowired
+    private QuestionRepository questionRepository;
+
+    // Home page
+    @GetMapping("/")
+    public String index() {
+        return "index.jsp";
+    }
+
+    // Create Quiz page
+    @GetMapping("/quiz/create")
+    public String createQuizForm(Model model) {
+        model.addAttribute("quiz", new Quiz());
+        return "createQuiz.jsp";
+    }
+
+    // Handle Quiz creation
+    @PostMapping("/quiz/create")
+    public String createQuiz(@ModelAttribute Quiz quiz) {
+        // Get the currently authenticated user (creator)
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = ((UserDetails) authentication.getPrincipal()).getUsername();
+        
+        // Find the user by username (you could adjust this based on your user service)
+        User creator = userRepository.findByUsername(username);
+
+        // Set the creator for the quiz
+        quiz.setCreator(creator); // Assuming `setCreator` is a method on the `Quiz` entity
+        
+        // Set number of questions based on difficulty
+        switch (quiz.getDifficulty().toLowerCase()) {
+            case "easy":
+                quiz.setNumQuestions(10);
+                break;
+            case "medium":
+                quiz.setNumQuestions(15);
+                break;
+            case "hard":
+                quiz.setNumQuestions(30);
+                break;
+            case "challenge":
+                quiz.setNumQuestions(40);
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid difficulty level");
+        }
+        
+        quizRepository.save(quiz);
+        return "redirect:/quiz/" + quiz.getId() + "/add-questions";
+    }
+
+    // Add Questions page
+    @GetMapping("/quiz/{id}/add-questions")
+    public String addQuestionsForm(@PathVariable Long id, Model model) {
+        Quiz quiz = quizRepository.findById(id).orElseThrow();
+        model.addAttribute("quiz", quiz);
+        return "addQuestions.jsp";
+    }
+
+    // Handle Questions submission
+    @PostMapping("/quiz/{id}/add-questions")
+    public String addQuestions(@PathVariable Long id, @RequestParam Map<String, String> questionData) {
+        Quiz quiz = quizRepository.findById(id).orElseThrow();
+        List<Question> questions = new ArrayList<>();
+
+        for (int i = 0; i < quiz.getNumQuestions(); i++) {
+            Question question = new Question();
+            question.setQuiz(quiz);
+            question.setContent(questionData.get("questions[" + i + "].content"));
+            question.setOptionA(questionData.get("questions[" + i + "].optionA"));
+            question.setOptionB(questionData.get("questions[" + i + "].optionB"));
+            question.setOptionC(questionData.getOrDefault("questions[" + i + "].optionC", ""));
+            question.setOptionD(questionData.getOrDefault("questions[" + i + "].optionD", ""));
+            question.setCorrectAnswer(questionData.get("questions[" + i + "].correctAnswer"));
+            questions.add(question);
+        }
+
+        questionRepository.saveAll(questions);
+        return "redirect:/dashboard";
+    }
+}

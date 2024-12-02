@@ -1,0 +1,32 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+    <%@ taglib prefix = "c" uri = "http://java.sun.com/jsp/jstl/core" %>
+    <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Create Quiz</title>
+</head>
+<body>
+    <h2>Create a New Quiz</h2>
+    <form:form method="POST" action="/quiz/create" modelAttribute="newQuiz">
+    <div>
+        <label for="quizName">Quiz Name:</label>
+        <form:input path="title" id="quizName" type="text" />
+    </div>
+    <div>
+        <label for="quizDescription">Quiz Description:</label>
+        <form:textarea path="description" id="quizDescription"></form:textarea>
+    </div>
+    <div>
+        <label for="quizCategory">Category:</label>
+        <form:input path="category" id="quizCategory" type="text" />
+    </div>
+    <div>
+        <button type="submit">Create Quiz</button>
+    </div>
+</form:form>
+    
+</body>
+</html>

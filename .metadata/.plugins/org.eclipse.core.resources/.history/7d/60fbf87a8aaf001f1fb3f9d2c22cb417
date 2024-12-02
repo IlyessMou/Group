@@ -1,0 +1,25 @@
+package com.example.quizzapp.services;
+
+@Service
+public class QuizService {
+
+    @Autowired
+    private QuizRepository quizRepo;
+
+    public List<Quiz> getAllPublicQuizzes() {
+        return (List<Quiz>) quizRepo.findAll();
+    }
+
+    public Quiz createQuiz(Quiz quiz, User creator) {
+        quiz.setCreator(creator);
+        return quizRepo.save(quiz);
+    }
+
+    public Optional<Quiz> findById(Long id) {
+        return quizRepo.findById(id);
+    }
+
+    public Optional<Quiz> findByCode(String code) {
+        return quizRepo.findByCode(code);
+    }
+}

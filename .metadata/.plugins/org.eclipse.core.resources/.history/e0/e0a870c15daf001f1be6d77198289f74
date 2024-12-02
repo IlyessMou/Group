@@ -1,0 +1,5 @@
+package com.example.quizza.repositories;
+
+public interface QuizRepository {
+
+}

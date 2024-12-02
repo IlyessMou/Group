@@ -1,0 +1,30 @@
+package com.example.quizza.models;
+
+import java.util.List;
+
+import org.aspectj.weaver.patterns.TypePatternQuestions.Question;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+
+@Entity
+public class Quiz {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String name;
+    private String difficulty;
+    private boolean isPrivate;
+    private String code;
+    private int numQuestions;
+
+    @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL)
+    private List<Question> questions;
+
+    // Getters and setters
+}

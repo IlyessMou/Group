@@ -1,0 +1,272 @@
+package com.example.quizzapp.controllers;
+
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import com.example.quizzapp.models.LoginUser;
+import com.example.quizzapp.models.Question;
+import com.example.quizzapp.models.Quiz;
+import com.example.quizzapp.models.Result;
+import com.example.quizzapp.models.User;
+import com.example.quizzapp.repositories.QuestionRepository;
+import com.example.quizzapp.repositories.QuizRepository;
+import com.example.quizzapp.repositories.ResultRepository;
+import com.example.quizzapp.services.QuestionService;
+import com.example.quizzapp.services.QuizService;
+import com.example.quizzapp.services.UserService;
+
+import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
+
+@Controller
+public class MainController {
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private QuizService quizService;
+
+    @Autowired
+    private QuestionService questionService;
+
+    @Autowired
+    private ResultRepository resultRepository;
+
+    @Autowired
+    private QuizRepository quizRepository;
+
+    @Autowired
+    private QuestionRepository questionRepository;
+
+    // Display the homepage with login and registration forms
+    @GetMapping("/")
+    public String index(Model model) {
+        model.addAttribute("newUser", new User());
+        model.addAttribute("newLogin", new LoginUser());
+        return "index.jsp"; // Landing page
+    }
+
+    // Handle user registration
+    @PostMapping("/register")
+    public String register(@Valid @ModelAttribute("newUser") User newUser, 
+            BindingResult result, Model model, HttpSession session) {
+        User user = userService.register(newUser, result);
+        if(result.hasErrors()) {
+            model.addAttribute("newLogin", new LoginUser());
+            return "index.jsp";
+        }
+        session.setAttribute("userId", user.getId());
+        return "redirect:/home";
+    }
+
+    // Handle user login
+    @PostMapping("/login")
+    public String login(@Valid @ModelAttribute("newLogin") LoginUser newLogin, 
+            BindingResult result, Model model, HttpSession session) {
+        User user = userService.login(newLogin, result);
+        if(result.hasErrors()) {
+            model.addAttribute("newUser", new User());
+            return "index.jsp";
+        }
+        session.setAttribute("userId", user.getId());
+        return "redirect:/home";
+    }
+
+    // Display the home page with quizzes and user data
+    @GetMapping("/home")
+    public String home(Model model, HttpSession session) {
+        if (session.getAttribute("userId") == null) {
+            return "redirect:/"; // Redirect to login page if not logged in
+        }
+
+        User user = userService.findById((Long) session.getAttribute("userId")).orElse(null);
+        if (user != null) {
+            model.addAttribute("user", user);
+            model.addAttribute("quizzes", quizService.getAllPublicQuizzes()); // Display all public quizzes
+            model.addAttribute("quizCode", ""); // Just a placeholder for the quiz code input field
+        }
+        
+        return "home.jsp"; // User's home page
+    }
+
+
+
+    // Handle user logout
+    @GetMapping("/logout")
+    public String logout(HttpSession session) {
+        session.invalidate(); // Clear the session
+        return "redirect:/"; // Redirect to the homepage
+    }
+
+    // Display the page for creating a new quiz
+    @GetMapping("/quiz/create")
+    public String createQuizPage(Model model, HttpSession session) {
+        if (session.getAttribute("userId") == null) {
+            return "redirect:/"; // Redirect to login page if not logged in
+        }
+        System.out.println("User is logged in");
+        model.addAttribute("newQuiz", new Quiz());
+        return "createQuiz.jsp"; // Page to create new quiz
+    }
+
+
+    @PostMapping("/quiz/create")
+    public String createQuiz(@ModelAttribute Quiz quiz, HttpSession session) {
+        // Get the userId from the session
+        Long userId = (Long) session.getAttribute("userId");
+
+        if (userId == null) {
+            // If the user is not logged in (no userId in session), redirect to login
+            return "redirect:/";
+        }
+
+        // Fetch the user (creator) from the database
+        User creator = userService.findById(userId).orElse(null);
+        if (creator == null) {
+            // If no creator found, redirect to login
+            return "redirect:/";
+        }
+
+        // Set the creator of the quiz
+        quiz.setCreator(creator);
+
+        // Debugging log to check creator
+        System.out.println("Creator ID: " + creator.getId());
+
+        // Set the number of questions based on the difficulty level
+        switch (quiz.getDifficulty().toLowerCase()) {
+            case "easy":
+                quiz.setNumQuestions(5);
+                break;
+            case "medium":
+                quiz.setNumQuestions(10);
+                break;
+            case "hard":
+                quiz.setNumQuestions(12);
+                break;
+            case "challenge":
+                quiz.setNumQuestions(15);
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid difficulty level");
+        }
+
+        // Save the quiz to the database, now with the creator set
+        quizRepository.save(quiz);
+
+        // Redirect to the add questions page
+        return "redirect:/quiz/" + quiz.getId() + "/add-questions";
+    }
+
+
+    // Show the add questions form
+    @GetMapping("/quiz/{id}/add-questions")
+    public String addQuestionsForm(@PathVariable Long id, Model model) {
+        Quiz quiz = quizRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid quiz ID"));
+        model.addAttribute("quiz", quiz);
+        model.addAttribute("newQuestion", new Question());  // Create a new question object for the form
+        return "addQuestions.jsp";  // The page to add questions
+    }
+
+    @PostMapping("/quiz/{id}/add-question")
+    public String addQuestion(@PathVariable Long id, @ModelAttribute("quiz") Quiz quiz, Model model) {
+        Quiz existingQuiz = quizRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid quiz ID"));
+
+        // Iterate through the questions from the form submission
+        for (Question question : quiz.getQuestions()) {
+            question.setQuiz(existingQuiz);  // Associate the question with the quiz
+            questionRepository.save(question);  // Save each question
+        }
+
+        model.addAttribute("quiz", existingQuiz);
+        model.addAttribute("newQuestion", new Question());  // Reset the form for the next question
+        return "redirect:/home";  
+    }
+
+
+
+    // Display a quiz and its questions
+    @GetMapping("/quiz/{id}")
+    public String showQuiz(@PathVariable("id") Long quizId, Model model, HttpSession session) {
+        if (session.getAttribute("userId") == null) {
+            return "redirect:/"; // Redirect to login page if not logged in
+        }
+
+        Quiz quiz = quizService.findById(quizId).orElse(null);
+        if (quiz == null) {
+            return "redirect:/home"; // If quiz not found, redirect to home
+        }
+
+        model.addAttribute("quiz", quiz);
+        model.addAttribute("questions", quiz.getQuestions()); // Display the quiz questions
+        return "quizPage.jsp"; // Page displaying quiz and its questions
+    }
+
+    // Submit answers and show results
+    @PostMapping("/quiz/{id}/submit")
+    public String submitQuiz(@PathVariable("id") Long quizId, 
+                             @RequestParam Map<String, String> answers, 
+                             HttpSession session, Model model) {
+        if (session.getAttribute("userId") == null) {
+            return "redirect:/"; // Redirect to login page if not logged in
+        }
+
+        Quiz quiz = quizService.findById(quizId).orElse(null);
+        if (quiz == null) {
+            return "redirect:/home"; // If quiz not found, redirect to home
+        }
+
+        User user = userService.findById((Long) session.getAttribute("userId")).orElse(null);
+        if (user == null) {
+            return "redirect:/"; // Redirect to login if no user found
+        }
+
+        int score = 0;
+        List<Question> questions = quiz.getQuestions();
+        for (Question question : questions) {
+            String correctAnswer = question.getCorrectAnswer();
+            String userAnswer = answers.get("question-" + question.getId());
+            if (correctAnswer != null && correctAnswer.equals(userAnswer)) {
+                score++;
+            }
+        }
+
+        // Save the result in the database
+        Result result = new Result(user, quiz, score);
+        resultRepository.save(result);
+
+        // Add result to model for display
+        model.addAttribute("quiz", quiz);
+        model.addAttribute("score", score);
+        model.addAttribute("totalQuestions", questions.size());
+        return "result.jsp"; // Page displaying the score and results
+    }
+
+    // Display a private quiz using a code
+    @GetMapping("/quiz/access")
+    public String accessQuiz(@RequestParam("code") String code, Model model) {
+        Quiz quiz = quizService.findByCode(code); // Assuming you have a method to find quizzes by code
+        if (quiz != null) {
+            model.addAttribute("quiz", quiz);
+            return "quizDetails.jsp"; // Or another view showing the quiz
+        } else {
+            model.addAttribute("error", "Invalid quiz code");
+            return "home.jsp"; // Stay on home page if quiz not found
+        }
+    }
+
+}
+
+
