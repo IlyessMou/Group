@@ -17,7 +17,7 @@
 body {
 	max-width: 1080px;
 	margin: auto;
-	background-image:url('https://blog.verifirst.com/hubfs/Blog_Images/Employment%2C%20Hiring%20and%20Background%20Screening%20Trends%20for%202022.jpg');
+	background-image:url('https://i.pinimg.com/736x/d6/70/99/d670990fa86f31233a53a22d7bb2f4bc.jpg');
     background-size: cover;
     background-position:center;
 }
@@ -25,20 +25,20 @@ h1 {
 	text-align: center;
 }
 table {
-	background-color: darkturquoise;
-	margin-left: auto;
+	background-color: black;
+    margin-left: auto;
     margin-right: auto;
     width: 85%;
-    border: 2px solid ghostwhite;
+    border: 6px solid ghostwhite;
     table-layout: fixed;
     display: table;
     border-radius: 10px;
-    box-shadow: 10px 10px darkturquoise;
+    box-shadow: 5px 8px black;
     margin-bottom: 20px;
 }
 tr {
-	border-bottom: 1px solid aliceblue;
-    background-color: lightblue;
+	border-bottom: 1px solid black;
+    background-color: white;
 }
 td {
 	padding: 16px;
@@ -60,7 +60,7 @@ td {
 }
 .input {
 	width: 100%;
-	background-color: beige;
+    background-color: snow;
     border-radius: 10px;
     padding: 5px;
 }
@@ -76,8 +76,8 @@ td {
 #button, .btn-primary{
 	width: 110px;
     height: 33px;
-    background-color: turquoise;
-    border-radius: 50%;
+    background-color: antiquewhite;
+    border-radius: 25px;
     font-family: cursive;
     font-size: medium;
 }

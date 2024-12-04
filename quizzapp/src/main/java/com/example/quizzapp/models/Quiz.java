@@ -32,6 +32,12 @@ public class Quiz {
     private Boolean isPrivate; 
     
     private int numQuestions;
+    
+    @NotEmpty(message = "Description is required")
+    private String description;
+    
+    @NotEmpty(message = "Language is required")
+    private String language;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "creator_id")
@@ -42,6 +48,10 @@ public class Quiz {
     
     @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Result> results;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
+    private Category category;
 
     public Quiz() {
         this.code = UUID.randomUUID().toString().substring(0, 8); 
@@ -120,7 +130,39 @@ public class Quiz {
         this.results = results;
     }
     
-    @Override
+    
+    
+    public Category getCategory() {
+		return category;
+	}
+
+
+	public void setCategory(Category category) {
+		this.category = category;
+	}
+	
+	
+	public String getDescription() {
+		return description;
+	}
+
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+
+	public String getLanguage() {
+		return language;
+	}
+
+
+	public void setLanguage(String language) {
+		this.language = language;
+	}
+
+
+	@Override
     public String toString() {
         return "Quiz{id=" + id + ", title='" + title + "', isPrivate=" + isPrivate + "}";
     }

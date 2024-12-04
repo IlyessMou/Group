@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.example.quizzapp.models.Category;
 import com.example.quizzapp.models.LoginUser;
 import com.example.quizzapp.models.Question;
 import com.example.quizzapp.models.Quiz;
@@ -20,6 +21,7 @@ import com.example.quizzapp.models.User;
 import com.example.quizzapp.repositories.QuestionRepository;
 import com.example.quizzapp.repositories.QuizRepository;
 import com.example.quizzapp.repositories.ResultRepository;
+import com.example.quizzapp.services.CategoryService;
 import com.example.quizzapp.services.QuestionService;
 import com.example.quizzapp.services.QuizService;
 import com.example.quizzapp.services.UserService;
@@ -47,14 +49,28 @@ public class MainController {
 
     @Autowired
     private QuestionRepository questionRepository;
-
-    // Display the homepage with login and registration forms
+    
+    @Autowired
+    private CategoryService categoryService;
+    
+    
+    // Visitor page
     @GetMapping("/")
-    public String index(Model model) {
-        model.addAttribute("newUser", new User());
-        model.addAttribute("newLogin", new LoginUser());
-        return "index.jsp"; 
+    public String visitorPage() {
+        return "visitor.jsp"; 
     }
+    // Display login page
+    @GetMapping("/login")
+    public String showLoginPage(Model model) {
+        model.addAttribute("newLogin", new LoginUser());
+        return "login.jsp";
+    }
+    // Display registration page
+    @GetMapping("/register")
+    public String showRegisterPage(Model model) {
+        model.addAttribute("newUser", new User());
+        return "register.jsp";
+    }  
 
     // Handle user registration
     @PostMapping("/register")
@@ -63,7 +79,7 @@ public class MainController {
         User user = userService.register(newUser, result);
         if(result.hasErrors()) {
             model.addAttribute("newLogin", new LoginUser());
-            return "index.jsp";
+            return "register.jsp";
         }
         session.setAttribute("userId", user.getId());
         return "redirect:/home";
@@ -76,7 +92,7 @@ public class MainController {
         User user = userService.login(newLogin, result);
         if(result.hasErrors()) {
             model.addAttribute("newUser", new User());
-            return "index.jsp";
+            return "login.jsp";
         }
         session.setAttribute("userId", user.getId());
         return "redirect:/home";
@@ -91,6 +107,7 @@ public class MainController {
 
         User user = userService.findById((Long) session.getAttribute("userId")).orElse(null);
         List<Quiz> publicQuizzes = quizRepository.findByIsPrivateFalse();
+        List<Category> categories = categoryService.getAllCategories();
     	System.out.println("Public Quizzes: " + publicQuizzes);
     	System.out.println("Number of public quizzes: " + publicQuizzes.size());
 
@@ -99,6 +116,8 @@ public class MainController {
             model.addAttribute("user", user);
             model.addAttribute("quizzes", publicQuizzes); 
             model.addAttribute("quizCode", ""); 
+            model.addAttribute("categories", categories);
+            
         }
         
         return "home.jsp"; 
@@ -119,6 +138,7 @@ public class MainController {
         }
         System.out.println("User is logged in");
         model.addAttribute("newQuiz", new Quiz());
+        model.addAttribute("categories", categoryService.getAllCategories());
         return "createQuiz.jsp"; 
     }
 
@@ -132,10 +152,10 @@ public class MainController {
                 quiz.setNumQuestions(10);
                 break;
             case "hard":
-                quiz.setNumQuestions(12);
+                quiz.setNumQuestions(18);
                 break;
             case "challenge":
-                quiz.setNumQuestions(15);
+                quiz.setNumQuestions(25);
                 break;
             default:
                 throw new IllegalArgumentException("Invalid difficulty level");

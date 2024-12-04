@@ -1,0 +1,36 @@
+package com.example.quizzapp.services;
+
+@Service
+public class CategoryInitializationService {
+
+    @Autowired
+    private CategoryRepository categoryRepository;
+
+    // Predefined categories (add images or links as needed)
+    private final List<Category> predefinedCategories = List.of(
+            new Category("General Knowledge", "/images/general_knowledge.jpg"),
+            new Category("Science", "/images/science.jpg"),
+            new Category("History", "/images/history.jpg"),
+            new Category("Geography", "/images/geography.jpg"),
+            new Category("Sports", "/images/sports.jpg"),
+            new Category("Technology", "/images/technology.jpg"),
+            new Category("Mathematics", "/images/mathematics.jpg"),
+            new Category("Music", "/images/music.jpg"),
+            new Category("Movies and TV Shows", "/images/movies_tv.jpg"),
+            new Category("Food and Drink", "/images/food_drink.jpg"),
+            new Category("Animals and Nature", "/images/animals_nature.jpg"),
+            new Category("Space and Astronomy", "/images/space_astronomy.jpg"),
+            new Category("Comics and Cartoons", "/images/comics_cartoons.jpg"),
+            new Category("Video Games", "/images/video_games.jpg"),
+            new Category("Travel", "/images/travel.jpg")
+    );
+
+    // This method will run once after the Spring context is initialized
+    @PostConstruct
+    public void initializeCategories() {
+        // Check if categories are already in the database, if not, insert them
+        if (categoryRepository.count() == 0) {
+            categoryRepository.saveAll(predefinedCategories);
+        }
+    }
+}

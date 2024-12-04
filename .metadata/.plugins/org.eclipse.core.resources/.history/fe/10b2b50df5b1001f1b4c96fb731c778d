@@ -1,0 +1,114 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Category Slideshow</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        /* Slideshow Container */
+        .slideshow-container {
+            position: relative;
+            max-width: 80%;
+            margin: 30px auto;
+            overflow: hidden;
+        }
+
+        /* Slide Image */
+        .slide {
+            display: none;
+            width: 100%;
+            height: auto;
+        }
+
+        /* Navigation Buttons */
+        .slide-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 10;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+            border-radius: 50%;
+        }
+
+        .slide-btn.left {
+            left: 0;
+        }
+
+        .slide-btn.right {
+            right: 0;
+        }
+
+        /* Caption for each slide */
+        .caption {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-size: 20px;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="slideshow-container">
+        <c:forEach var="category" items="${categories}">
+            <div class="slide">
+                <img src="${category.image}" alt="${category.name}" class="d-block w-100">
+                <div class="caption">${category.name}</div>
+            </div>
+        </c:forEach>
+
+        <!-- Navigation buttons -->
+        <button class="slide-btn left" onclick="plusSlides(-1)"><i class="fas fa-arrow-left"></i></button>
+        <button class="slide-btn right" onclick="plusSlides(1)"><i class="fas fa-arrow-right"></i></button>
+    </div>
+
+    <script>
+        let slideIndex = 0;
+
+        // Function to show the current slide
+        function showSlides() {
+            let slides = document.querySelectorAll('.slide');
+            if (slideIndex >= slides.length) { slideIndex = 0; }
+            if (slideIndex < 0) { slideIndex = slides.length - 1; }
+
+            // Hide all slides
+            slides.forEach((slide) => {
+                slide.style.display = "none";
+            });
+
+            // Display the current slide
+            slides[slideIndex].style.display = "block";
+        }
+
+        // Function to move slides
+        function plusSlides(n) {
+            slideIndex += n;
+            showSlides();
+        }
+
+        // Initialize slideshow
+        showSlides();
+
+        // Auto change slide every 3 seconds
+        setInterval(() => {
+            plusSlides(1);
+        }, 3000);
+
+    </script>
+
+</body>
+</html>

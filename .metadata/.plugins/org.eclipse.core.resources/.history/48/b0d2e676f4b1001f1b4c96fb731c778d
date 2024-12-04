@@ -1,0 +1,144 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Category Carousel</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        .cover-flow-container {
+            display: flex;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+            max-width: 80%;
+            margin: auto;
+            margin-top: 30px;
+        }
+
+        .cover-flow {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+            position: relative;
+        }
+
+        .category-card {
+            flex: 0 0 auto;
+            width: 200px;
+            margin: 0 10px;
+            opacity: 0.5; /* Default transparency for non-active cards */
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            transform: scale(0.8); /* Default smaller size for non-active cards */
+        }
+
+        .category-card.active {
+            opacity: 1; /* Highlight active card */
+            transform: scale(1); /* Enlarge active card */
+        }
+
+        .category-image {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .category-name {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: white;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+            margin-top: 10px;
+        }
+
+        .slide-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 10;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+            border-radius: 50%;
+        }
+
+        .slide-btn.left {
+            left: -30px;
+        }
+
+        .slide-btn.right {
+            right: -30px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Cover Flow Section -->
+    <div class="cover-flow-container">
+        <h1>Welcome, ${user.username}!</h1>
+        <div class="cover-flow">
+            <c:forEach var="category" items="${categories}">
+                <div class="category-card">
+                    <img src="${category.image}" alt="${category.name}" class="category-image">
+                    <div class="category-name">${category.name}</div>
+                </div>
+            </c:forEach>
+        </div>
+        <button class="slide-btn left" onclick="slideLeft()"><i class="fas fa-arrow-left"></i></button>
+        <button class="slide-btn right" onclick="slideRight()"><i class="fas fa-arrow-right"></i></button>
+    </div>
+
+    <script>
+        let currentIndex = 0;
+        const coverFlow = document.querySelector('.cover-flow');
+        const cards = document.querySelectorAll('.category-card');
+        const cardWidth = cards[0].offsetWidth + 20; // Include margins
+
+        function updateCarousel() {
+            const offset = (coverFlow.offsetWidth - cardWidth) / 2;
+            const translateX = -currentIndex * cardWidth + offset;
+
+            coverFlow.style.transform = `translateX(${translateX}px)`;
+
+            // Highlight the active card
+            cards.forEach((card, index) => {
+                card.classList.remove('active');
+                if (index === currentIndex) {
+                    card.classList.add('active');
+                }
+            });
+        }
+
+        function slideLeft() {
+            if (currentIndex > 0) {
+                currentIndex--;
+            } else {
+                currentIndex = cards.length - 1; // Loop to the last card
+            }
+            updateCarousel();
+        }
+
+        function slideRight() {
+            if (currentIndex < cards.length - 1) {
+                currentIndex++;
+            } else {
+                currentIndex = 0; // Loop to the first card
+            }
+            updateCarousel();
+        }
+
+        // Initialize the carousel
+        updateCarousel();
+
+        document.querySelector('.slide-btn.left').addEventListener('click', slideLeft);
+        document.querySelector('.slide-btn.right').addEventListener('click', slideRight);
+    </script>
+</body>
+</html>
+
+    

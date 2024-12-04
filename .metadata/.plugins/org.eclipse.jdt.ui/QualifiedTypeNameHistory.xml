@@ -11,8 +11,9 @@
     <fullyQualifiedTypeName name="com.example.quizzapp.models.Result"/>
     <fullyQualifiedTypeName name="org.springframework.ui.Model"/>
     <fullyQualifiedTypeName name="com.example.quizzapp.models.Question"/>
-    <fullyQualifiedTypeName name="java.util.List"/>
     <fullyQualifiedTypeName name="java.util.Map"/>
     <fullyQualifiedTypeName name="com.example.quizzapp.models.User"/>
     <fullyQualifiedTypeName name="java.util.Optional"/>
+    <fullyQualifiedTypeName name="java.util.List"/>
+    <fullyQualifiedTypeName name="com.example.quizzapp.models.Category"/>
 </qualifiedTypeNameHistroy>
