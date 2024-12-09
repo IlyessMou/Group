@@ -1,5 +1,0 @@
-INDEX VERSION 1.134
-C:\Users\user\Desktop\group\.metadata\.plugins\org.eclipse.jst.jsp.core\jspsearch\859949234.index
-\quizza\src\main\java
-C:\Users\user\Desktop\group\.metadata\.plugins\org.eclipse.jst.jsp.core\jspsearch\3710032683.index
-\quizzapp\src\main\java

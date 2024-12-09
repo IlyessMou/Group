@@ -1,4 +1,0 @@
-package com.example.quizza.repositories;
-
-public interface QuestionRepository extends JpaRepository<Question, Long> {
-}
