@@ -26,6 +26,6 @@ sts
 jsp/bootstrap/css
 
 Group Members:
-Ilyess Moulazem: Team Leader/Back-End/API integration
-Mohamed Ali Feddaoui: Back-End/Front-End
-Mohamed Ali Midassi: Front-End/Testing
+Ilyess Moulazem: Team Leader/Back-End/API integration;
+Mohamed Ali Feddaoui: Back-End/Front-End;
+Mohamed Ali Midassi: Front-End/Testing;
