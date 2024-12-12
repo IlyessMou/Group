@@ -31,3 +31,5 @@ Ilyess Moulazem: Team Leader/Back-End/API integration;
 Mohamed Ali Feddaoui: Back-End/Front-End;
 
 Mohamed Ali Midassi: Front-End/Testing;
+
+#important: to test the sending code by email feature make sure to contact me so i can provide a valid api key to use
